@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import GlitchText from "@/components/ui/GlitchText";
+import GlassSurface from "@/components/ui/GlassSurface";
 
 const navLinks = [
     { href: "#work", label: "Work" },
@@ -27,6 +29,39 @@ const Logo = () => (
     </Link>
 );
 
+const NavContent = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (value: boolean) => void }) => (
+    <nav className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Logo />
+
+        {/* Desktop Navigation */}
+        <ul className="hidden items-center gap-8 md:flex">
+            {navLinks.map((link) => (
+                <li key={link.href}>
+                    <Link href={link.href}>
+                        <GlitchText
+                            enableOnHover
+                            speed={0.3}
+                            enableShadows={false}
+                            className="!text-sm !font-medium !text-gray-600 hover:!text-black"
+                        >
+                            {link.label}
+                        </GlitchText>
+                    </Link>
+                </li>
+            ))}
+        </ul>
+
+        {/* Hamburger Button */}
+        <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="relative z-[60] flex h-10 w-10 items-center justify-center rounded-md text-black md:hidden"
+            aria-label="Toggle menu"
+        >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+    </nav>
+);
+
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -41,33 +76,27 @@ export function Navbar() {
 
     return (
         <>
-            <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
-                <nav className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-                    <Logo />
+            {/* Mobile Header (no glassmorphism) */}
+            <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/90 backdrop-blur-sm md:hidden">
+                <NavContent isOpen={isOpen} setIsOpen={setIsOpen} />
+            </header>
 
-                    {/* Desktop Navigation */}
-                    <ul className="hidden items-center gap-8 md:flex">
-                        {navLinks.map((link) => (
-                            <li key={link.href}>
-                                <Link
-                                    href={link.href}
-                                    className="text-sm font-medium text-gray-600 transition-colors hover:text-black"
-                                >
-                                    {link.label}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-
-                    {/* Hamburger Button */}
-                    <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="relative z-[60] flex h-10 w-10 items-center justify-center rounded-md text-black md:hidden"
-                        aria-label="Toggle menu"
-                    >
-                        {isOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
-                </nav>
+            {/* Desktop Header with GlassSurface */}
+            <header className="sticky top-0 z-50 hidden w-full md:block">
+                <GlassSurface
+                    width="100%"
+                    height={64}
+                    borderRadius={0}
+                    borderWidth={0}
+                    blur={16}
+                    brightness={60}
+                    opacity={0.85}
+                    backgroundOpacity={0.1}
+                    saturation={1.2}
+                    className="!rounded-none"
+                >
+                    <NavContent isOpen={isOpen} setIsOpen={setIsOpen} />
+                </GlassSurface>
             </header>
 
             {/* MOBILE MENU OVERLAY
@@ -96,9 +125,14 @@ export function Navbar() {
                                     <Link
                                         href={link.href}
                                         onClick={() => setIsOpen(false)}
-                                        className="text-4xl font-bold text-gray-900 hover:text-gray-500"
                                     >
-                                        {link.label}
+                                        <GlitchText
+                                            enableOnHover
+                                            speed={0.4}
+                                            className="!text-4xl !font-bold !text-gray-900 hover:!text-gray-500"
+                                        >
+                                            {link.label}
+                                        </GlitchText>
                                     </Link>
                                 </motion.li>
                             ))}
